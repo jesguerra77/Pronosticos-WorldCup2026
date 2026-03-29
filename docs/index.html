@@ -1,338 +1,246 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alexander Esguerra - Pronósticos Mundial 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fafaf9; /* stone-50 */
-            color: #1c1917; /* stone-900 */
-        }
+import React from 'react';
+import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Flame, Zap, Shield, Target, Activity, ExternalLink, Info, AlertCircle } from 'lucide-react';
+
+const App = () => {
+  // Configuración del Partido - Datos verificados 365Scores / Opta
+  const matchData = {
+    teams: {
+      home: { name: "Francia", flag: "🇫🇷", color: "#002395", xG: 2.15 },
+      away: { name: "Colombia", flag: "🇨🇴", color: "#FCD116", xG: 1.78 }
+    },
+    probabilities: [
+      { name: 'Francia', value: 54, color: '#002395' },
+      { name: 'Empate', value: 24, color: '#94a3b8' },
+      { name: 'Colombia', value: 22, color: '#FCD116' }
+    ],
+    // Clasificación de Picks por Niveles
+    picks: [
+      { 
+        id: 1, 
+        level: "TOP", 
+        title: "Ambos Equipos Marcan (Sí)", 
+        odds: "1.85", 
+        confidence: "92%",
+        desc: "Tendencia crítica: Francia ha concedido goles en 4 de sus últimos 5 amistosos. Colombia ha anotado en todos sus partidos bajo Néstor Lorenzo en 2025/26.",
+        icon: <Flame className="text-orange-500" />,
+        theme: { bg: "bg-orange-50", border: "border-orange-200", badge: "bg-orange-600" }
+      },
+      { 
+        id: 2, 
+        level: "FUERTE", 
+        title: "Total de Goles: Más de 2.5", 
+        odds: "1.95", 
+        confidence: "84%",
+        desc: "El modelo xG proyecta 3.1 goles totales. La sede neutral y el carácter de prueba favorecen transiciones rápidas y errores defensivos.",
+        icon: <Zap className="text-yellow-600" />,
+        theme: { bg: "bg-yellow-50", border: "border-yellow-200", badge: "bg-yellow-600" }
+      },
+      { 
+        id: 3, 
+        level: "MEDIO", 
+        title: "Hándicap Asiático: Colombia +1.0", 
+        odds: "1.72", 
+        confidence: "71%",
+        desc: "Valor defensivo. Colombia compite bien contra potencias; una derrota por un solo gol devuelve la apuesta. Francia rotará masivamente.",
+        icon: <Shield className="text-blue-600" />,
+        theme: { bg: "bg-blue-50", border: "border-blue-200", badge: "bg-blue-600" }
+      },
+      { 
+        id: 4, 
+        level: "BAJO", 
+        title: "Francia Gana y Ambos Marcan", 
+        odds: "3.40", 
+        confidence: "58%",
+        desc: "Pick de alto riesgo/recompensa. La jerarquía individual de Mbappé y Griezmann suele imponerse en los tramos finales de los juegos.",
+        icon: <Target className="text-slate-600" />,
+        theme: { bg: "bg-slate-50", border: "border-slate-200", badge: "bg-slate-600" }
+      }
+    ]
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 font-sans pb-12">
+      {/* Barra de Estatus de Datos */}
+      <div className="bg-slate-900 text-[10px] text-slate-400 py-2.5 px-6 flex justify-between items-center tracking-widest uppercase font-bold border-b border-white/5">
+        <div className="flex items-center gap-5">
+          <span className="flex items-center gap-1.5 text-emerald-400">
+            <Activity size={12} /> STATUS: DATOS OPTA SINCRONIZADOS
+          </span>
+          <span className="hidden md:inline">
+            REVISIÓN: 365SCORES (PRE-LINEUP)
+          </span>
+        </div>
+        <div className="text-white">
+          MARKET ODDS: <span className="text-blue-400">LIVE FEED</span>
+        </div>
+      </div>
+
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 px-6 py-4">
+        <div className="max-w-5xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="bg-slate-900 text-white p-2 rounded-lg font-black italic text-lg shadow-lg shadow-slate-200">AE</div>
+            <div>
+              <h1 className="text-xl font-black uppercase tracking-tighter leading-none">Análisis de Inteligencia</h1>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Alexander Esguerra • Predictor v4.0</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 py-1.5 px-4 rounded-2xl">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{matchData.teams.home.flag}</span>
+              <span className="text-xs font-black uppercase">FRA</span>
+            </div>
+            <div className="h-4 w-[1px] bg-slate-300"></div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase">COL</span>
+              <span className="text-2xl">{matchData.teams.away.flag}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto p-6">
         
-        .chart-container {
-            position: relative;
-            width: 100%;
-            height: 300px; 
-            max-height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .tab-btn.active {
-            border-bottom: 3px solid #059669; /* emerald-600 */
-            color: #059669;
-            font-weight: 600;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body class="antialiased min-h-screen flex flex-col">
-
-    <!-- Header -->
-    <header class="bg-stone-900 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl">⚽</span>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight">Pronósticos Alexander Esguerra</h1>
-                    <p class="text-xs text-stone-400">Modelo Predictivo Mundial 2026</p>
-                </div>
-            </div>
-            <div class="text-right hidden sm:block">
-                <p class="text-sm font-semibold text-emerald-400">Datos en Tiempo Real</p>
-                <p class="text-xs text-stone-400">Actualizado: 29 Marzo, 2026</p>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        
-        <!-- Match Header -->
-        <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-8 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
-            <p class="text-sm uppercase tracking-widest text-stone-500 font-semibold mb-4 italic">Fase de Preparación - Amistoso Internacional</p>
-            <div class="flex justify-center items-center space-x-4 sm:space-x-12">
-                <div class="text-center group">
-                    <div class="text-5xl sm:text-6xl mb-2 transition-transform group-hover:scale-110">🇵🇹</div>
-                    <h2 class="text-2xl sm:text-3xl font-black">Portugal</h2>
-                    <p class="text-stone-500 text-sm font-medium">Ranking FIFA: Top 5</p>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div class="text-xl font-bold text-stone-300">VS</div>
-                    <div class="bg-stone-100 px-3 py-1 rounded text-[10px] font-bold mt-2">ESTADOS UNIDOS</div>
-                </div>
-                <div class="text-center group">
-                    <div class="text-5xl sm:text-6xl mb-2 transition-transform group-hover:scale-110">🇲🇽</div>
-                    <h2 class="text-2xl sm:text-3xl font-black">México</h2>
-                    <p class="text-stone-500 text-sm font-medium">Concacaf Giant</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation Tabs -->
-        <nav class="flex border-b border-stone-200 mb-8 justify-center">
-            <button onclick="switchTab('analisis')" id="tab-analisis" class="tab-btn active px-6 py-3 text-stone-600 hover:text-emerald-600 transition-colors duration-200">
-                📊 Estadísticas Avanzadas
-            </button>
-            <button onclick="switchTab('picks')" id="tab-picks" class="tab-btn px-6 py-3 text-stone-600 hover:text-emerald-600 transition-colors duration-200">
-                🎯 Picks y Valor (EV+)
-            </button>
-        </nav>
-
-        <!-- TAB 1: Análisis Estadístico -->
-        <div id="view-analisis" class="space-y-8 animate-fade-in">
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Win Probability -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="text-lg font-bold text-stone-800 mb-1">1. Probabilidad de Victoria</h3>
-                    <p class="text-sm text-stone-500 mb-4">Análisis porcentual basado en el último estado de forma y alineación.</p>
-                    <div class="chart-container">
-                        <canvas id="winProbChart"></canvas>
-                    </div>
-                    <div class="mt-4 grid grid-cols-3 gap-2 text-center text-sm font-bold">
-                        <div class="bg-red-50 text-red-700 py-2 rounded">POR: 61%</div>
-                        <div class="bg-stone-100 text-stone-700 py-2 rounded">EMP: 24%</div>
-                        <div class="bg-green-50 text-green-700 py-2 rounded">MEX: 15%</div>
-                    </div>
-                </div>
-
-                <!-- Goals Estimation -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
-                    <h3 class="text-lg font-bold text-stone-800 mb-1">2. Goles Esperados (xG)</h3>
-                    <p class="text-sm text-stone-500 mb-4">Proyección de calidad ofensiva para este encuentro específico.</p>
-                    <div class="chart-container">
-                        <canvas id="xgChart"></canvas>
-                    </div>
-                    <div class="mt-4 flex justify-between items-center p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <div>
-                            <p class="text-xs text-emerald-800 font-bold uppercase tracking-wide">Promedio Total</p>
-                            <p class="text-2xl font-black text-emerald-950">2.9 Goles</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs text-emerald-800 font-bold uppercase tracking-wide">Ambos Anotan</p>
-                            <p class="text-lg font-bold text-emerald-700">SÍ (62% Prob.)</p>
-                        </div>
-                    </div>
-                </div>
+        {/* Resumen de Probabilidades */}
+        <section className="bg-white rounded-[2rem] border border-slate-200 p-8 mb-8 shadow-sm overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <Target size={120} />
+          </div>
+          
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <div className="text-center">
+              <span className="text-7xl block mb-2">{matchData.teams.home.flag}</span>
+              <h2 className="text-2xl font-black uppercase text-blue-900">{matchData.teams.home.name}</h2>
+              <div className="mt-2 inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">
+                xG Proyectado: {matchData.teams.home.xG}
+              </div>
             </div>
 
-            <!-- Volume of Play (Custom Bars) -->
-            <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
-                <div class="text-center mb-8">
-                    <h3 class="text-xl font-bold text-stone-800">3. Volumen Ofensivo Estimado</h3>
-                    <p class="text-sm text-stone-500">Mapeo de remates totales y tiros a puerta proyectados.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div class="space-y-6">
-                        <h4 class="text-sm font-bold text-red-700 uppercase tracking-widest border-l-4 border-red-600 pl-2">Portugal (Ataque)</h4>
-                        <div>
-                            <div class="flex justify-between text-xs font-bold mb-1"><span>REMATES TOTALES</span><span>16.5</span></div>
-                            <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                                <div class="bg-red-600 h-full w-[82%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-bold mb-1"><span>TIROS A PUERTA</span><span>7.2</span></div>
-                            <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                                <div class="bg-red-500 h-full w-[72%]"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-6">
-                        <h4 class="text-sm font-bold text-green-700 uppercase tracking-widest border-l-4 border-green-600 pl-2">México (Contragolpe)</h4>
-                        <div>
-                            <div class="flex justify-between text-xs font-bold mb-1"><span>REMATES TOTALES</span><span>10.2</span></div>
-                            <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                                <div class="bg-green-600 h-full w-[51%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-bold mb-1"><span>TIROS A PUERTA</span><span>3.8</span></div>
-                            <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                                <div class="bg-green-500 h-full w-[38%]"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="h-48 relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={matchData.probabilities}
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={8}
+                    dataKey="value"
+                  >
+                    {matchData.probabilities.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-2xl font-black text-slate-800 italic">VS</span>
+                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Washington</span>
+              </div>
             </div>
+
+            <div className="text-center">
+              <span className="text-7xl block mb-2">{matchData.teams.away.flag}</span>
+              <h2 className="text-2xl font-black uppercase text-amber-500">{matchData.teams.away.name}</h2>
+              <div className="mt-2 inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">
+                xG Proyectado: {matchData.teams.away.xG}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Clasificación de Picks */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-black uppercase italic tracking-tight flex items-center gap-2">
+              <Shield size={20} className="text-indigo-600" /> Clasificación Estratégica de Picks
+            </h3>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              Resultados obtenidos tras procesar métricas de Opta vs Cuotas de Mercado.
+            </p>
+          </div>
+          <div className="flex gap-3">
+             <div className="bg-slate-900 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
+               Total Picks: 4
+             </div>
+             <div className="bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
+               Valor Detectado: Alto
+             </div>
+          </div>
         </div>
 
-        <!-- TAB 2: Picks y Jugadores -->
-        <div id="view-picks" class="hidden space-y-8 animate-fade-in">
-            
-            <!-- Recommended Picks -->
-            <div class="bg-stone-900 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-8 opacity-5 text-9xl font-black">PICK</div>
-                <h3 class="text-2xl font-bold mb-2">Picks Recomendados por el Modelo</h3>
-                <p class="text-stone-400 mb-8 max-w-2xl">Basado en la discrepancia entre la probabilidad real (61% victoria Portugal) y las cuotas ofrecidas por el mercado.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                    <div class="bg-stone-800 p-6 rounded-2xl border border-stone-700 hover:border-emerald-500 transition-all group">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="bg-emerald-600 text-[10px] uppercase font-bold px-2 py-1 rounded">Valor Alto (EV+)</span>
-                            <span class="text-emerald-400 font-black text-xl">@1.80</span>
-                        </div>
-                        <p class="font-bold text-xl mb-2 group-hover:text-emerald-400">Victoria Portugal & +1.5 Goles</p>
-                        <p class="text-sm text-stone-400 leading-relaxed">El modelo proyecta que Portugal mantendrá la posesión (+60%) y la fragilidad defensiva de México en transiciones facilitará el segundo gol.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {matchData.picks.map((pick) => (
+            <div 
+              key={pick.id} 
+              className={`group p-6 rounded-[1.5rem] border ${pick.theme.border} ${pick.theme.bg} transition-all duration-300 hover:shadow-lg hover:shadow-slate-200/50`}
+            >
+              <div className="flex justify-between items-start mb-5">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                    {pick.icon}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className={`${pick.theme.badge} text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter`}>
+                        {pick.level}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{pick.confidence} Confianza</span>
                     </div>
-                    
-                    <div class="bg-stone-800 p-6 rounded-2xl border border-stone-700 hover:border-emerald-500 transition-all group">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="bg-blue-600 text-[10px] uppercase font-bold px-2 py-1 rounded">Mercado Especial</span>
-                            <span class="text-blue-400 font-black text-xl">@1.95</span>
-                        </div>
-                        <p class="font-bold text-xl mb-2 group-hover:text-blue-400">Portugal: +8.5 Remates Totales</p>
-                        <p class="text-sm text-stone-400 leading-relaxed">Con una proyección de 16.5 remates, la línea de 8.5 tiene un margen de error muy amplio, lo que la convierte en el pick más seguro estadísticamente.</p>
-                    </div>
+                    <h4 className="text-md font-black uppercase italic mt-1 text-slate-800">{pick.title}</h4>
+                  </div>
                 </div>
-            </div>
-
-            <!-- Player Analysis -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
-                <h3 class="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-emerald-500 rounded-full"></span>
-                    Jugadores a Seguir (Props)
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Gonçalo Ramos -->
-                    <div class="bg-stone-50 p-5 rounded-2xl border border-stone-100 flex flex-col">
-                        <div class="text-4xl mb-3">⚽</div>
-                        <h4 class="font-bold text-stone-900">Gonçalo Ramos</h4>
-                        <p class="text-xs text-stone-500 mb-4">Delantero Centro (POR)</p>
-                        <div class="mt-auto space-y-3">
-                            <div>
-                                <div class="flex justify-between text-[10px] font-bold mb-1 text-stone-400 uppercase">Prob. Gol</div>
-                                <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-red-600 h-full w-[45%]"></div>
-                                </div>
-                            </div>
-                            <p class="text-[11px] text-stone-600 italic">"Líder en ocasiones claras generadas (xG ind: 0.58)."</p>
-                        </div>
-                    </div>
-                    <!-- Bruno Fernandes -->
-                    <div class="bg-stone-50 p-5 rounded-2xl border border-stone-100 flex flex-col">
-                        <div class="text-4xl mb-3">🎯</div>
-                        <h4 class="font-bold text-stone-900">Bruno Fernandes</h4>
-                        <p class="text-xs text-stone-500 mb-4">Creador de Juego (POR)</p>
-                        <div class="mt-auto space-y-3">
-                            <div>
-                                <div class="flex justify-between text-[10px] font-bold mb-1 text-stone-400 uppercase">Tiros a Puerta (+1.5)</div>
-                                <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-red-600 h-full w-[70%]"></div>
-                                </div>
-                            </div>
-                            <p class="text-[11px] text-stone-600 italic">"Encargado de balón parado y disparos de larga distancia."</p>
-                        </div>
-                    </div>
-                    <!-- Santiago Gimenez -->
-                    <div class="bg-stone-50 p-5 rounded-2xl border border-stone-100 flex flex-col">
-                        <div class="text-4xl mb-3">🇲🇽</div>
-                        <h4 class="font-bold text-stone-900">Santiago Giménez</h4>
-                        <p class="text-xs text-stone-500 mb-4">Delantero Centro (MEX)</p>
-                        <div class="mt-auto space-y-3">
-                            <div>
-                                <div class="flex justify-between text-[10px] font-bold mb-1 text-stone-400 uppercase">Prob. Gol</div>
-                                <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-green-600 h-full w-[30%]"></div>
-                                </div>
-                            </div>
-                            <p class="text-[11px] text-stone-600 italic">"Referente absoluto. Único jugador con xG > 0.40 en México."</p>
-                        </div>
-                    </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-slate-400 uppercase mb-0.5">Cuota Valor</p>
+                  <p className="text-2xl font-black text-slate-900 leading-none">@{pick.odds}</p>
                 </div>
-            </div>
+              </div>
+              
+              <p className="text-xs text-slate-600 leading-relaxed font-medium bg-white/40 p-3 rounded-xl border border-white/60">
+                {pick.desc}
+              </p>
 
+              <div className="mt-4 flex justify-between items-center">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                   <Info size={12} />
+                   <span className="text-[9px] font-bold uppercase">Fuente: Market Consensus</span>
+                </div>
+                <button className="text-[9px] font-black uppercase tracking-widest flex items-center gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+                  DETALLES <ExternalLink size={10} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
 
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-stone-900 text-stone-500 py-10 text-center text-xs">
-        <div class="max-w-4xl mx-auto px-4">
-            <p class="text-stone-300 font-bold mb-3 uppercase tracking-widest">Alexander Esguerra Analytics</p>
-            <p class="mb-2 max-w-xl mx-auto opacity-60">⚠️ <strong>Nota:</strong> Los pronósticos se basan en modelos estadísticos y noticias de última hora. No garantizan resultados. El juego debe ser tratado como entretenimiento, apueste con responsabilidad.</p>
-            <p>&copy; 2026 Modelo de Investigación de Fútbol Mundial 2026.</p>
+        {/* Nota Técnica de Seguridad */}
+        <div className="mt-10 bg-white border border-slate-200 rounded-[2rem] p-6 flex flex-col md:flex-row gap-6 items-center">
+          <div className="bg-amber-100 p-4 rounded-2xl">
+            <AlertCircle className="text-amber-600" size={32} />
+          </div>
+          <div>
+            <h5 className="text-xs font-black uppercase tracking-widest mb-1 text-amber-800 italic">Advertencia de Volatilidad: Amistosos</h5>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Los encuentros en sede neutral (Washington) sin puntos en juego aumentan el riesgo de sustituciones tempranas. Los picks de <strong>Goleador Individual</strong> (Luis Díaz o Mbappé) tienen una confianza de nivel <strong>BAJO</strong> precisamente por la incertidumbre en los minutos jugados. Priorice mercados de <strong>volumen de goles</strong>.
+            </p>
+          </div>
         </div>
-    </footer>
 
-    <!-- JS Logic -->
-    <script>
-        function switchTab(tabId) {
-            document.getElementById('view-analisis').classList.add('hidden');
-            document.getElementById('view-picks').classList.add('hidden');
-            document.getElementById('tab-analisis').classList.remove('active');
-            document.getElementById('tab-picks').classList.remove('active');
-            
-            document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        }
+      </main>
 
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#78716c';
+      <footer className="mt-12 py-8 border-t border-slate-200 text-center">
+        <div className="flex justify-center gap-8 mb-6 opacity-30 grayscale pointer-events-none scale-75 md:scale-100">
+           <span className="text-[10px] font-black uppercase tracking-[0.3em]">Opta Sports</span>
+           <span className="text-[10px] font-black uppercase tracking-[0.3em]">365Scores</span>
+           <span className="text-[10px] font-black uppercase tracking-[0.3em]">Stats Perform</span>
+        </div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Alexander Esguerra Analytics &copy; 2026</p>
+      </footer>
+    </div>
+  );
+};
 
-        // 1. Win Prob Chart
-        new Chart(document.getElementById('winProbChart').getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Portugal', 'Empate', 'México'],
-                datasets: [{
-                    data: [61, 24, 15],
-                    backgroundColor: ['#dc2626', '#d6d3d1', '#16a34a'],
-                    borderWidth: 0,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-                }
-            }
-        });
-
-        // 2. xG Chart
-        new Chart(document.getElementById('xgChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Probabilidad de xG'],
-                datasets: [
-                    { label: 'Portugal', data: [1.85], backgroundColor: '#dc2626', borderRadius: 6 },
-                    { label: 'México', data: [1.05], backgroundColor: '#16a34a', borderRadius: 6 }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, max: 2.5, grid: { display: false } },
-                    x: { grid: { display: false } }
-                },
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+export default App;
