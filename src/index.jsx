@@ -118,8 +118,8 @@ const App = () => {
               </div>
             </div>
 
-            <div className="h-48 relative">
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <div style={{ height: '200px', width: '100%', position: 'relative' }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <PieChart>
                   <Pie
                     data={matchData.probabilities}
