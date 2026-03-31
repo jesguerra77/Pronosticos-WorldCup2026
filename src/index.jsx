@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Flame, Zap, Shield, Target, Activity, ExternalLink, Info, AlertCircle } from 'lucide-react';
 
@@ -244,3 +245,13 @@ const App = () => {
 };
 
 export default App;
+
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}
