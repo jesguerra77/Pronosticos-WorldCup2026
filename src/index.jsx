@@ -8,13 +8,13 @@ const App = () => {
   // Configuración del Partido - Datos verificados 365Scores / Opta
   const matchData = {
     teams: {
-      home: { name: "Francia", flag: "🇫🇷", color: "#002395", xG: 2.15 },
-      away: { name: "Colombia", flag: "🇨🇴", color: "#FCD116", xG: 1.78 }
+      home: { name: "Francia", flag: "🇫🇷", color: "#001a4d", xG: 2.15 },
+      away: { name: "Colombia", flag: "🇨🇴", color: "#b39200", xG: 1.78 }
     },
     probabilities: [
-      { name: 'Francia', value: 54, color: '#002395' },
+      { name: 'Francia', value: 54, color: '#001a4d' },
       { name: 'Empate', value: 24, color: '#94a3b8' },
-      { name: 'Colombia', value: 22, color: '#FCD116' }
+      { name: 'Colombia', value: 22, color: '#b39200' }
     ],
     // Clasificación de Picks por Niveles
     picks: [
@@ -84,7 +84,7 @@ const App = () => {
             <div className="bg-slate-900 text-white p-2 rounded-lg font-black italic text-lg shadow-lg shadow-slate-200">AE</div>
             <div>
               <h1 className="text-xl font-black uppercase tracking-tighter leading-none">Análisis de Inteligencia</h1>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Alexander Esguerra • Predictor v4.0</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Johnathan Esguerra • Predictor v4.0</p>
             </div>
           </div>
           
